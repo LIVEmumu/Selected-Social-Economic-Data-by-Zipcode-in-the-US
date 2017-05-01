@@ -16,4 +16,4 @@ S1501 EDUCATIONAL ATTAINMENT    
 Zip code information comes from:  
 <http://federalgovernmentzipcodes.us/>
 
-Since zip code changes a lot and the zip code information is from 2012, there are plenty of NAs in the file. You can use your own zip code information to merge this data and remove NAs in the process.
+Since zip codes change a lot and the zip code data is from 2012, there are plenty of NAs in the file. You can use your own zip code information to merge this data and remove NAs in the process.
