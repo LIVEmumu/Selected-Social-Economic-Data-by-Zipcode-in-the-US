@@ -1,0 +1,89 @@
+---
+title: "R Notebook"
+output:
+  html_document: default
+  html_notebook: default
+---
+
+
+```{r}
+library(stringr)
+```
+
+
+      social economic data comes from 
+<https://factfinder.census.gov/faces/nav/jsf/pages/community_facts.xhtml>
+```{r}
+
+education<-read.csv(file="EDUCATIONAL ATTAINMENT.csv")
+econ<-read.csv(file="SELECTED ECONOMIC CHARACTERISTICS.csv")
+demographic<-read.csv(file="ACS DEMOGRAPHIC AND HOUSING ESTIMATES.csv")
+
+
+```
+
+```{r}
+#Rename Columns and remove the first row
+df1<-education[c(2,162,174)]
+names(df1)[1]<-"ZIPCODE"
+names(df1)[2]<-"Percent High School Graduate or Higher"
+names(df1)[3]<-"Percent Bachelor's Degree or Higher"
+df1<-df1[-1,]
+
+
+df2<-econ[c(2,38,100,248,514)]
+names(df2)[1]<-"ZIPCODE"
+names(df2)[2]<-"Unemployment Rate"
+names(df2)[3]<-"Mean Travel Time to Work"
+names(df2)[4]<-"Median Household Income"
+names(df2)[5]<-"Percentage of People Below Poverty Line"
+df2<-df2[-1,]
+
+
+df3<-demographic[c(2,4,8,10,12,14,68,236,238,240,242,244,246,248,250,252,254,256,258)]
+names(df3)[1]<-"ZIPCODE"
+names(df3)[2]<-"Total Population"
+names(df3)[3]<-"Male Population"
+names(df3)[4]<-"Percent Male Population"
+names(df3)[5]<-"Female Population"
+names(df3)[6]<-"Percent Female Population"
+names(df3)[7]<-"Median Age"
+names(df3)[8]<-"Total White Population"
+names(df3)[9]<-"Percent White Population"
+names(df3)[10]<-"Total Black Population"
+names(df3)[11]<-"Percent Black Population"
+names(df3)[12]<-"Total American Indian and Alaska Native Population"
+names(df3)[13]<-"Percent American Indian and Alaska Native Population"
+names(df3)[14]<-"Total Asian Population"
+names(df3)[15]<-"Percent Asian Population"
+names(df3)[16]<-"Total Native Hawaiian and Other Pacific Islander Population"
+names(df3)[17]<-"Percent Native Hawaiian and Other Pacific Islander Population"
+names(df3)[18]<-"Total Other Races Population"
+names(df3)[19]<-"Percent Other Races Population"
+df3<-df3[-1,]
+
+```
+
+      Zipcode information comes from:  
+<http://federalgovernmentzipcodes.us/>  
+The data is from 2012 and zipcode changes so there are many missing values in the merged file.  
+```{r}
+df4<-read.csv(file="Zip.csv")
+#pad "0"s to zipcode column to set its width to 5 in order to match with the other dataset.
+ZIPCODE<-str_pad(as.numeric(df4$Zipcode), 5, pad = "0")
+df4<-cbind(df4,ZIPCODE)
+zip_info<-df4[c(13,3:4,6,7)]
+```
+
+      Merge the 4 datasets, all=TRUE works the same as OUTER JOIN in SQL.
+```{r}
+merge_temp<-merge(x = df1, y = df2, by = "ZIPCODE", all = TRUE)
+merge_temp_2<-merge(x = merge_temp, y = df3, by = "ZIPCODE", all = TRUE)
+merged<-merge(x = zip_info, y = merge_temp_2, by = "ZIPCODE", all = TRUE)
+
+```
+
+```{r}
+write.csv(merged, "2015 ACS 5-year Estimates: Selected Social Economic Data by Zipcode in the US.csv")
+```
+
